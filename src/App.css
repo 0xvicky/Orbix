@@ -1,0 +1,15 @@
+.appContainer {
+  width: 500px;
+  min-height: 500px;
+  /* border: 2px solid white; */
+  box-shadow: 0px 0px 10px 2px #888888;
+  border-radius: 10px;
+}
+
+.bg-stars {
+  background: url("./Assets/stars_3.svg"), url("./Assets/e1.svg"), url("./Assets/e2.svg");
+  background-repeat: no-repeat;
+  background-size: 200%;
+  background-position: center;
+  filter: brightness(100%);
+}
