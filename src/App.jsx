@@ -1,9 +1,9 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Routes, Route} from "react-router-dom";
 import {PrivacyPolicy, Terms, AboutUs, Logout, RevealKey} from "./components";
 import {Home, CreateAccount} from "./container/index";
 import {Toaster} from "react-hot-toast";
-import stars from "./Assets/stars.svg";
+
 
 import "./App.css";
 // import {contactBackground} from "./utils/methods/contactBackground";

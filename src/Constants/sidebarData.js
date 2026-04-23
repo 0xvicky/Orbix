@@ -1,4 +1,4 @@
-/*global chrome*/
+
 import keyLogo from "../Assets/key.svg";
 import terms from "../Assets/terms.svg";
 import about from "../Assets/about.svg";
