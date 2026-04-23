@@ -1,15 +1,21 @@
 import {KeyPair} from "near-api-js";
+import { getAccountId } from "./generateKeyPairs";
 const nearAPI = require("near-api-js");
 const sha256 = require("js-sha256");
 const BN = require("bn.js");
+const bs58 = require("bs58");
 
-export const fetchBalance = async (accountId, networkType, privateKey) => {
+
+export const fetchBalance = async (publicKey, networkType, privateKey) => {
+  console.log(publicKey)
+  const accountId = publicKey
   const connection = await nearConnection(accountId, networkType, privateKey);
+  console.log(connection)
   try {
     // gets account balance
     const account = await connection.account(accountId);
     const balance = ((await account.getAccountBalance()).available / 10 ** 24).toFixed(2);
-    // console.log(balance);
+    console.log(balance);
     return balance;
   } catch (error) {
     console.log(`Error occured:${error}`);
@@ -21,12 +27,13 @@ export const transferNear = async (
   signer,
   networkType,
   privateKey,
-  receiver,
+  publicKey,
   nearAmount
 ) => {
   if (privateKey.length === 96) {
     privateKey = privateKey.slice(8);
   }
+  const receiver = publicKey
   const amount = nearAPI.utils.format.parseNearAmount(nearAmount);
   // const provider = new nearAPI.providers.JsonRpcProvider(
   //   `https://few-serene-dew.near-mainnet.quiknode.pro/8a6ce52775b1f360597c149ed986cb3ef4304ac7/`
@@ -78,7 +85,33 @@ export const transferNear = async (
   }
 };
 
+// Step 1: Get all access keys of a named account
+async function getAccessKeys(namedAccount,contractId) {
+  const NEAR_RPC = "https://rpc.testnet.near.org";
+// const NFT_CONTRACT = "nft.whyvickyyy.testnet";
+  const response = await fetch(NEAR_RPC, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "1",
+      method: "query",
+      params: {
+        request_type: "view_access_key_list",
+        finality: "final",
+        account_id: namedAccount,
+      },
+    }),
+  });
+
+  const data = await response.json();
+  console.log(data)
+  return data.result.keys; // array of { public_key, access_key }
+}
+
+
 export const fetchAccountNFT = async (
+  publicKey,
   accountId,
   networkType,
   privateKey,
@@ -86,6 +119,8 @@ export const fetchAccountNFT = async (
   tokenId
 ) => {
   //near connection
+
+  // console.log(publicKey, contractId)
   const connection = await nearConnection(accountId, networkType, privateKey);
   const account = await connection.account(accountId);
   //Interacting with contract
@@ -98,24 +133,70 @@ export const fetchAccountNFT = async (
       changeMethods: [] // change methods modify state
     }
   );
-  console.log("thiss")
-console.log(contract)
+//   console.log("thiss")
+// console.log(contract)
   const res = await contract.nft_token({
     token_id: tokenId,
     owner_id: accountId // argument name and value - pass empty object if no args required
   });
-  console.log(res)
-  return res;
+ console.log(res);
+console.log(accountId);
+
+if (res != null) {
+  // If owner matches directly, return the NFT
+  if (res.owner_id === accountId) {
+    return {
+      status: true,
+      data: res,
+    };
+  }
+
+  // Owner doesn't match — check if accountId has a key
+  // that matches the wallet's public key
+  console.log("owner mismatch, checking access keys...");
+
+  const keys = await getAccessKeys(res.owner_id); // pass named account, not contractId
+  console.log(keys);
+
+  for (const key of keys) {
+    const keyWithoutPrefix = key.public_key.slice(8); // removes "ed25519:"
+    console.log(`Comparing: ${keyWithoutPrefix} === ${publicKey}`);
+
+    if (keyWithoutPrefix === publicKey) {
+      // Key matches — wallet owns this named account
+      return {
+           status: true,
+        data: res,
+      };
+    }
+  }
+
+  // No matching key found
+  return {
+    status: true,
+    data: null,
+    message: "Public key does not match any key on the owner account",
+  };
+}
+
+// res is null — token doesn't exist
+return {
+  status: false,
+  data: null,
+  message: "NFT not found",
+};
+  // return res;
 };
 
 export const transferNFT = async (
   tokenId,
-  ownerId,
+  publicKey,
   contractId,
   recipient,
   networkType,
   privateKey
 ) => {
+  const ownerId = publicKey
   const connection = await nearConnection(ownerId, networkType, privateKey);
   const account = await connection.account(ownerId);
   //Interacting with contract
@@ -146,11 +227,11 @@ export const transferNFT = async (
 };
 
 export const nearConnection = async (accountId, networkType, privateKey) => {
-  // console.log("in nearConnection");
-  // console.log(privateKey);
+  console.log("in nearConnection");
+  // console.log("ed25519:"+privateKey);
   const keyPair = nearAPI.utils.KeyPair.fromString(privateKey);
 
-  // console.log(keyPair);
+  console.log(keyPair);
   const keyStore = new nearAPI.keyStores.InMemoryKeyStore();
   keyStore.setKey(networkType, accountId, keyPair);
   const config = {
@@ -168,3 +249,4 @@ export const nearConnection = async (accountId, networkType, privateKey) => {
   // console.log(nearConnection);
   return nearConnection;
 };
+

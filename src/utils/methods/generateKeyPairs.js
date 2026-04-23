@@ -17,15 +17,19 @@ export const genFromSecret = privateKey => {
 
   // Get the public key
   const publicKey = keyPair.publicKey;
+  console.log(publicKey)
 
   // Encode the public key in base58
-  const pubKeyBase = bs58.encode(publicKey);
+  const pubKey = bs58.encode(publicKey);
+  console.log(pubKey)
 
-  const accId = getAccountId(pubKeyBase);
+  const accId = getAccountId(pubKey);
+  console.log(accId)
   const privKey = `ed25519:${privateKey}`;
-  const pubKey = `ed25519:${pubKeyBase}`;
+  const pubKeyBase = `ed25519:${pubKey}`;
 
-  return {accId, pubKey, privKey, privateKeyBytes};
+
+  return {accId ,pubKey, privKey, privateKeyBytes};
 };
 
 export const getAccountId = publicKey => {

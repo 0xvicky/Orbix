@@ -62,25 +62,25 @@ const ImportAccount = () => {
       let accountId, publicKey, secretKey;
 
       if (inputData.method === secretKeyTxt) {
-        const {accId, pubKey, privKey, privateKeyBytes} = genFromSecret(inputData.value);
+        const {accId,pubKey, privKey, privateKeyBytes} = genFromSecret(inputData.value);
         if (privateKeyBytes.length !== 64) {
           return toast.error("Invalid Secret Key");
         }
-        accountId = accId;
-        publicKey = pubKey.slice(8);
+        accountId=accId;
+        publicKey = pubKey;
         secretKey = privKey.slice(8);
       } else {
         if (!checkInputPhrase(inputData.value)) {
           throw new Error("Invalid input phrase.");
         }
         const keyStore = parseSeedPhrase(inputData.value);
-        accountId = getAccountId(keyStore.publicKey.slice(8));
         publicKey = keyStore.publicKey.slice(8);
+        accountId = getAccountId(publicKey)
         secretKey = keyStore.secretKey.slice(8);
       }
 
       const newStore = {
-        accountId: accountId,
+        accountId:accountId,
         publicKey: publicKey,
         secretKey: encrypt(secretKey, publicKey)
       };

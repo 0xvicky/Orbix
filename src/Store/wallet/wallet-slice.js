@@ -5,6 +5,7 @@ import {networks} from "../../Constants/networks";
 
 const initialState = {
   currentNetwork: JSON.parse(localStorage.getItem("network")) || networks[0],
+  publicKey:null,
   accountId: null,
   balance: null,
   secretKey: null,
@@ -21,9 +22,13 @@ const walletSlice = createSlice({
       // chrome.storage.sync.set({network: action.payload});
       localStorage.setItem("network", JSON.stringify(action.payload));
     },
+    setPublicKey(state, action){
+      state.publicKey = action.payload;
+    },
     setAccountId(state, action) {
       state.accountId = action.payload;
     },
+  
     setBalance(state, action) {
       state.balance = action.payload;
     },
@@ -43,6 +48,7 @@ const walletSlice = createSlice({
 
 export const {
   setCurrentNetwork,
+  setPublicKey,
   setAccountId,
   setBalance,
   setSecretKey,

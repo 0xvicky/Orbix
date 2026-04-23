@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Routes, Route} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {setAccountId, setSecretKey} from "../../Store/wallet/wallet-slice";
+import {setAccountId, setSecretKey, setPublicKey} from "../../Store/wallet/wallet-slice";
 import {fetchKeys} from "../../utils";
 import {Sidebar, HomeScreen, Send, Receive, Dropdown} from "../../components";
 import {bitLogo} from "../../Assets";
@@ -23,7 +23,8 @@ const Home = () => {
   useEffect(() => {
     if (keyStore) {
       // console.log(keyStore);
-      dispatch(setAccountId(keyStore?.accountId));
+      dispatch(setAccountId(keyStore?.accountId))
+      dispatch(setPublicKey(keyStore?.publicKey));
       dispatch(setSecretKey(decrypt(keyStore?.secretKey, keyStore?.publicKey)));
     }
   }, []);

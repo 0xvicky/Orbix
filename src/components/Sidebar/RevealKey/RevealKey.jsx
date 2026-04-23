@@ -19,12 +19,13 @@ const RevealKey = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const keyStore = fetchKeys(); // Fetch keyStore data
-  const {secretKey, lang} = useSelector(state => state.wallet); // Access wallet state from Redux
+  const {publicKey,secretKey, lang} = useSelector(state => state.wallet); // Access wallet state from Redux
 
   // Translations
   const translations = lang === "en" ? engJs : spainJs; // Simplify language handling
   const {
     revealSecretKey,
+    publicKey: publicKeyLabel,
     secretKey: secretKeyLabel,
     enterPassword,
     password: passwordLabel
@@ -42,29 +43,44 @@ const RevealKey = () => {
   };
 
   return (
-    <div className='flex flex-col justify-evenly items-start space-y-4 w-full'>
+    <div className='flex flex-col justify-evenly items-center space-y-4 w-full'>
       <Link
-        to='/homescreen'
+        to='/home screen'
         className='self-start ml-3'>
         <PiArrowBendUpLeftBold
           fontSize={28}
           color='white'
         />
       </Link>
-      <div className='flex flex-col items-center gap-y-4 ml-8'>
+      <div className='flex flex-col items-center gap-y-4'>
         <h1 className='text-white text-4xl font-bold'>
-          {isKey ? secretKeyLabel : revealSecretKey}
+          {isKey ? "Credentials" : "Reveal Credentials"}
         </h1>
         {isKey ? (
-          <CopyToClipboard text={secretKey}>
-            <div
-              className='border border-white opacity-85 text-white text-center p-3 px-20 rounded-md cursor-pointer hover:bg-slate-300 hover:text-bitBg active:scale-95 transition-all duration-400 mb-36'
-              onClick={() => toast.success("Secret Key Copied to Clipboard!")}>
-              {`${secretKey.slice(0, 22)}...${secretKey.slice(-7)}`}
+          <div className='flex flex-col items-center gap-y-6 mb-36'>
+            <div>
+              <p className='text-white text-sm mb-2'>{publicKeyLabel}</p>
+              <CopyToClipboard text={publicKey}>
+                <div
+                  className='border border-white opacity-85 text-white text-center p-3 px-20 rounded-md cursor-pointer hover:bg-slate-300 hover:text-bitBg active:scale-95 transition-all duration-400'
+                  onClick={() => toast.success("Public Key Copied to Clipboard!")}>
+                  {`${publicKey.slice(0, 22)}...${publicKey.slice(-7)}`}
+                </div>
+              </CopyToClipboard>
             </div>
-          </CopyToClipboard>
+            <div>
+              <p className='text-white text-sm mb-2'>{secretKeyLabel}</p>
+              <CopyToClipboard text={secretKey}>
+                <div
+                  className='border border-white opacity-85 text-white text-center p-3 px-20 rounded-md cursor-pointer hover:bg-slate-300 hover:text-bitBg active:scale-95 transition-all duration-400'
+                  onClick={() => toast.success("Secret Key Copied to Clipboard!")}>
+                  {`${secretKey.slice(0, 22)}...${secretKey.slice(-7)}`}
+                </div>
+              </CopyToClipboard>
+            </div>
+          </div>
         ) : (
-          <div className='flex flex-col items-center justify-around px-3 space-y-14 mb-24'>
+          <div className='flex flex-col items-center px-3 space-y-14 mb-24'>
             <div className='flex flex-col items-start space-y-4 mt-8'>
               <p className='text-white'>{enterPassword}</p>
               <div className='flex items-center relative ring-1 focus:ring-white transition-all duration-200 ring-slate-400 p-2 rounded-md'>
@@ -95,7 +111,7 @@ const RevealKey = () => {
             <button
               className='bit-btn px-8 font-bold'
               onClick={checkPassword}>
-              <span>{revealSecretKey}</span>
+              <span>Reveal Credentials</span>
             </button>
           </div>
         )}

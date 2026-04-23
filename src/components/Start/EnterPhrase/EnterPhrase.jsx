@@ -53,7 +53,6 @@ const EnterPhrase = ({phrase, setIsEnterPhrase, keyStore}) => {
       const newStore = {
         publicKey: keyStore.publicKey,
         secretKey: keyStore.secretKey,
-        accountId: keyStore.accountId
       };
       navigate("/login/create-password");
     }

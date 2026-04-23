@@ -16,7 +16,7 @@ const AccountOptions = () => {
   const {createAccount, or, importAccount, termsConds} = translations; // Destructure translations for clarity
 
   return (
-    <div className='flex flex-col items-center w-full justify-between'>
+    <div className='flex flex-col items-center justify-center gap-y-24 '>
    
       <Link
         className='self-start px-4 -mt-36'
@@ -42,11 +42,11 @@ const AccountOptions = () => {
           </button>
         </Link>
       </div>
-      <Link
+      {/* <Link
         to='/terms'
         className='text-white underline'>
         {termsConds}
-      </Link>
+      </Link> */}
     </div>
   );
 };

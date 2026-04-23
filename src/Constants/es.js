@@ -2,6 +2,7 @@
 export default {
   clickToStart: "Haga clic para empezar",
   termsConds: "Condiciones generales",
+  publicKey: "Clave pública",
   secretKey: "Clave secreta",
   import: "Importar",
   importCollectibles: "Importar coleccionables",

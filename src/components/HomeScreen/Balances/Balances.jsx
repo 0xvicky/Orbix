@@ -25,7 +25,7 @@ const Balances = () => {
   const keyStore = fetchKeys();
   const navigate = useNavigate();
 
-
+console.log("in balances", accountId)
   /**
    * Fetches and dispatches the current account balance.
    * Only runs if secretKey and accountId are defined.
@@ -92,7 +92,8 @@ const Balances = () => {
       {/* Display Wallet ID with Copy Functionality */}
       <div className='flex items-center justify-between px-5 py-1'>
         <span className='font-semibold text-xl text-white'>Wallet ID</span>
-        <CopyToClipboard text={accountId}>
+        <CopyToClipboard text={accountId && accountId}>
+          {/* {console.log("here",accountId)} */}
           <div
             className='flex items-center gap-x-3 font-normal font-inter rounded-md px-3 p-1 cursor-pointer active:scale-105 text-white'
             onClick={() => toast.success("Wallet ID Copied!")}>

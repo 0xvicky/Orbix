@@ -1,15 +1,15 @@
-import React, {useState, useCallback} from "react";
+import React, { useState, useCallback } from "react";
 import Input from "./Input"; // Importing custom Input component
-import {useSelector} from "react-redux/es/hooks/useSelector"; // Redux hook to access state
-import {fetchAccountNFT} from "../../../utils/methods/nearMethods"; // Utility function to fetch NFT data
+import { useSelector } from "react-redux/es/hooks/useSelector"; // Redux hook to access state
+import { fetchAccountNFT } from "../../../utils/methods/nearMethods"; // Utility function to fetch NFT data
 import toast from "react-hot-toast"; // Toast notifications for user feedback
-import {PiArrowBendUpLeftBold} from "react-icons/pi"; // Icon for back button
+import { PiArrowBendUpLeftBold } from "react-icons/pi"; // Icon for back button
 import engJs from "../../../Constants/en"; // English translations
 import spainJs from "../../../Constants/es"; // Spanish translations
 
-const ImportNft = ({setImport}) => {
+const ImportNft = ({ setImport }) => {
   // Hooks for accessing wallet state
-  const {accountId, currentNetwork, secretKey, lang} = useSelector(state => state.wallet);
+  const { accountId, publicKey, currentNetwork, secretKey, lang } = useSelector(state => state.wallet);
   const [nftParams, setNftParams] = useState({
     contractId: "", // Store contract ID
     tokenId: "" // Store token ID
@@ -17,8 +17,8 @@ const ImportNft = ({setImport}) => {
 
   // Callback to handle input parameter changes
   const handleParams = useCallback(e => {
-    const {name, value} = e.target; // Destructure name and value from input
-    setNftParams(prev => ({...prev, [name]: value})); // Update nftParams state
+    const { name, value } = e.target; // Destructure name and value from input
+    setNftParams(prev => ({ ...prev, [name]: value })); // Update nftParams state
   }, []);
 
   // Callback to handle back button click
@@ -33,8 +33,17 @@ const ImportNft = ({setImport}) => {
 
   // Function to import NFT
   const importNFT = async () => {
-    const nftData = JSON.parse(localStorage.getItem("nfts")) || []; // Fetch existing NFTs from localStorage
-    const isExist = nftData.some(item => item.token_id === nftParams.tokenId); // Check if NFT already exists
+    let nftArr = []
+    try {
+      let lclNFTs = JSON.parse(localStorage.getItem("nfts"))
+      if(Array.isArray(lclNFTs)){
+        nftArr = lclNFTs
+      }
+    } catch (error) {
+      nftArr = []
+    }
+    // Fetch existing NFTs from localStorage
+    const isExist = nftArr.some(item => item.tokenId === nftParams.tokenId); // Check if NFT already exists
 
     // Show error if NFT already exists
     if (isExist) {
@@ -43,6 +52,7 @@ const ImportNft = ({setImport}) => {
       try {
         // Fetch NFT details using the utility function
         const result = await fetchAccountNFT(
+          publicKey,
           accountId,
           currentNetwork?.type,
           secretKey,
@@ -51,25 +61,31 @@ const ImportNft = ({setImport}) => {
         );
 
         // Handle NFT existence check
-        if (result === null) {
-          toast.error("NFT doesn't exist.");
-        } else if (result.owner_id === accountId) {
+        if (result.status && result.data) {
           // If NFT belongs to the account, add it to localStorage
-          result.network = currentNetwork; // Attach current network info
-          result.contractId = nftParams.contractId; // Attach contract ID
-          nftData.push(result); // Add the NFT to the local storage array
-          localStorage.setItem("nfts", JSON.stringify(nftData)); // Update localStorage
+          let data = result?.data
+          let nftData = {
+            tokenId: data?.token_id,
+            contractId: nftParams.contractId,
+            title: data?.metadata?.title,
+            description: data?.metadata?.description,
+            media: data?.metadata?.media,
+            network: currentNetwork,
+          }
+          nftArr.push(nftData); // Add the NFT to the local storage array
+          localStorage.setItem("nfts", JSON.stringify(nftArr)); // Update localStorage
+        } else if (result.status && !result.data) {
+          toast.error("NFT doesn't belong to this account")
         } else {
-          // Show error if NFT does not belong to this account
-          toast.error("NFT doesn't belong to this account.");
+          toast.error("NFT doesn't exist")
         }
+
       } catch (error) {
         // Show error if fetching NFT data fails
         toast.error(
-          `Account ${
-            nftParams.contractId.length > 17
-              ? `${nftParams.contractId.slice(0, 4)}...${nftParams.contractId.slice(-6)}`
-              : nftParams.contractId
+          `Account ${nftParams.contractId.length > 17
+            ? `${nftParams.contractId.slice(0, 4)}...${nftParams.contractId.slice(-6)}`
+            : nftParams.contractId
           } doesn't exist on this network.`
         );
       }

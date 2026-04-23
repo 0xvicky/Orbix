@@ -12,7 +12,7 @@ const Sidebar = () => {
   const aboutTxt =  engJs.aboutUs 
   const termsTxt =engJs.termsConds 
   const privacyTxt =   engJs.privacyPolicy 
-  const revealKeyTxt =engJs.revealSecretKey 
+  const revealKeyTxt = "Reveal Credentials"
   const logoutTxt = engJs.logout 
   const resetTxt = engJs.reset 
   const titles = [revealKeyTxt, logoutTxt, resetTxt];

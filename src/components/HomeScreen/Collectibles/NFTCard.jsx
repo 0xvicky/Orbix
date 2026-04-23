@@ -32,11 +32,11 @@ const NFTCard = ({nft, setCardOpen}) => {
   useEffect(() => {
     if (nft) {
       setNftData({
-        tokenId: nft?.token_id,
+        tokenId: nft?.tokenId,
         contractId: nft?.contractId,
-        title: nft?.metadata?.title,
-        description: nft?.metadata?.description,
-        media: nft?.metadata?.media
+        title: nft?.title,
+        description: nft?.description,
+        media: nft?.media
       });
     }
   }, []);
@@ -47,7 +47,7 @@ const NFTCard = ({nft, setCardOpen}) => {
         <TransferNft
           setIsTransfer={setIsTransfer}
           setCardOpen={setCardOpen}
-          nft={nft}
+          nft={nftData}
           certTransfer={false}
         />
       ) : (

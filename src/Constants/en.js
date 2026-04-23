@@ -4,6 +4,7 @@ export default {
   termsConds: "Terms & Conditions",
   backupPhrs: "Backup Phrase",
   noCertIssue: "No Certificate Issued",
+  publicKey: "Public Key",
   secretKey: "Secret Key",
   enterSecretKey: "Enter Secret Key",
   createPassword: "Create Password",

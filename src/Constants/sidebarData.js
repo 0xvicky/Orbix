@@ -10,7 +10,7 @@ export const sidebarLinks = [
  
   {
     logo: keyLogo,
-    title: "reveal secret key",
+    title: "reveal credentials",
     destination: "/reveal",
     handler: () => {}
   },

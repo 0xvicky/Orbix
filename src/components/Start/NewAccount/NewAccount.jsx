@@ -36,10 +36,13 @@ const NewAccount = () => {
   //functions
   const generateStore = () => {
     let keys = generateSeedPhrase();
+    let publicKey = keys.publicKey.slice(8);
+    let accountId = getAccountId(publicKey)
+    console.log(keys)
     setKeyStore({
-      publicKey: keys.publicKey,
-      secretKey: encrypt(keys.secretKey.slice(8), keys.publicKey),
-      accountId: getAccountId(keys.publicKey.slice(8))
+      accountId:accountId,
+      publicKey: publicKey,
+      secretKey: encrypt(keys.secretKey.slice(8), publicKey),
     });
     setPhrase(keys.seedPhrase);
   };

@@ -12,7 +12,7 @@ const TransferNft = ({setIsTransfer, nft, setCardOpen, certTransfer}) => {
   const {accountId, currentNetwork, secretKey, lang} = useSelector(state => state.wallet);
   const [recipient, setRecipient] = useState("");
   const [transferring, setTransferring] = useState(false);
-  const {token_id, contractId} = nft;
+  const {tokenId, contractId} = nft;
 
   // Translations
   const translations = {
@@ -25,7 +25,7 @@ const TransferNft = ({setIsTransfer, nft, setCardOpen, certTransfer}) => {
     try {
       const nftData = JSON.parse(localStorage.getItem("nfts")) || [];
       const updatedNfts = nftData.filter(
-        NFT => !(NFT.token_id === token_id && NFT.contractId === contractId)
+        NFT => !(NFT.tokenId === tokenId && NFT.contractId === contractId)
       );
       localStorage.setItem("nfts", JSON.stringify(updatedNfts));
     } catch (error) {
@@ -44,7 +44,7 @@ const TransferNft = ({setIsTransfer, nft, setCardOpen, certTransfer}) => {
 
     try {
       const res = await transferNFT(
-        token_id.toString(),
+        tokenId.toString(),
         accountId,
         contractId,
         recipient,

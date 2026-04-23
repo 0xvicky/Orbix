@@ -34,6 +34,7 @@ const EnterPassword = () => {
 
   // Use Effects
   useEffect(() => {
+
     localStorage.setItem("onPassword", true);
   }, []);
 
@@ -64,7 +65,7 @@ const EnterPassword = () => {
 
       // chrome.storage.sync.set({ keyStore: updatedJSON });
 
-      toast.success("Welcome to Bitwallet", {
+      toast.success("Welcome to Orbix", {
         style: {marginTop: "20px"}
       });
       navigate("/homescreen");
